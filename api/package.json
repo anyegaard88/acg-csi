@@ -1,7 +1,7 @@
 {
   "name": "acg-csi-functions",
   "version": "2.0.0",
-  "description": "ACG Client Software Intelligence — Azure Function Backend (v4 model)",
+  "description": "ACG Client Software Intelligence \u2014 Azure Function Backend (v4 model)",
   "main": "src/functions/sync.js",
   "scripts": {
     "start": "func start",
@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "@azure/functions": "^4.5.0",
-    "@azure/data-tables": "^13.2.2"
+    "@azure/data-tables": "^13.2.2",
+    "@azure/storage-blob": "^12.17.0"
   },
   "engines": {
     "node": ">=18"
