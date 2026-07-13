@@ -1,0 +1,15 @@
+{
+  "name": "acg-csi-functions",
+  "version": "1.0.0",
+  "description": "ACG Client Software Intelligence — Azure Function Backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "func start"
+  },
+  "dependencies": {
+    "@azure/data-tables": "^13.2.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
