@@ -199,7 +199,7 @@ function openCaptureModal(){
   document.getElementById("cap-save").addEventListener("click",function(){
     var txt=document.getElementById("cap-text").value.trim();
     if(!txt)return;
-    var entry={id:uid(),ts:Date.now(),by:currentUser||"ACG",from:document.getElementById("cap-from").value.trim(),text:txt,tag:document.getElementById("cap-tag").value,status:document.getElementById("cap-status").value,image:"",promoted:"",faq:false,faqTitle:""};
+    var entry={id:uid(),ts:Date.now(),by:(settings&&settings.name)||"ACG",from:document.getElementById("cap-from").value.trim(),text:txt,tag:document.getElementById("cap-tag").value,status:document.getElementById("cap-status").value,image:"",promoted:"",faq:false,faqTitle:""};
     brainEntries.unshift(entry);
     save(SK+"_brain",brainEntries);
     closeEdit();
