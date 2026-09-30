@@ -34,14 +34,10 @@ function render(){
 // ── INIT ────────────────────────────────────────────────────
 // ── LOGIN GATE ────────────────────────────────────────────────
 function checkLoginGate(){
-  var hasName=settings.name&&settings.name.trim()&&settings.name.trim().toLowerCase()!=="anna";
-  // First-run check: if name was never explicitly set (still default placeholder), show gate
-  var explicitlySet=load(SK+"_login_done",false);
-  if(!explicitlySet){
-    showLoginGate();
-    return false;
-  }
-  return true;
+  // Always require login on every page load — clear the flag so gate always shows
+  save(SK+"_login_done",false);
+  showLoginGate();
+  return false;
 }
 function showLoginGate(){
   var gate=document.getElementById("login-gate");
