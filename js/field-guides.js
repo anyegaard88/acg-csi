@@ -681,7 +681,9 @@ function runParseTranscript(){
   if(saveBar)saveBar.innerHTML='<div style="padding:12px 0;color:var(--text-muted);font-size:14px">⏳ Parsing transcript with AI… this takes 10–20 seconds</div>';
 
   if(AZURE_API_URL){
-    const trainerNote=meta.trainer?`The trainer's name is "${meta.trainer}" — focus on their speech and teaching content, not client questions or small talk.`:'Extract all teaching content.';
+    // Pre-process to strip timestamps/speaker labels and filter to trainer speech BEFORE sending to AI
+    const cleaned=preprocessTranscript(rawBody,fmt,meta.trainer);
+    const trainerNote=meta.trainer?`This is already filtered to the trainer's speech only.`:'This is the full session content.';
     const prompt=`You are building a training field guide for a healthcare software trainer at a plastic surgery consulting firm.
 
 Guide info:
@@ -692,8 +694,8 @@ Guide info:
 - Audience: ${meta.audience||'(not specified)'}
 - ${trainerNote}
 
-Transcript:
-${rawBody.slice(0,8000)}
+Trainer content:
+${cleaned.slice(0,8000)}
 
 Parse this into a structured field guide with logical sections. Each section should represent a distinct topic or workflow step covered in the session.
 
@@ -731,7 +733,8 @@ Rules:
 - Each section needs at least 2 blocks
 - Keep "understand" bullets concise (one line each)
 - Preserve the trainer's actual explanations and specific advice
-- Skip client questions, "got it", small talk, and filler
+- IGNORE any remaining speaker name labels (e.g. "Anna:", "Client:", "Speaker 1:") — extract only the spoken content
+- Skip client questions, "got it", "okay", small talk, and filler
 - If timing isn't stated, estimate based on content depth`;
 
     fetch(AZURE_API_URL,{
