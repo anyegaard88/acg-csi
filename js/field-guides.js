@@ -675,11 +675,122 @@ function runParseTranscript(){
   const rawBody=document.getElementById('tx_body')?.value||'';
   if(!rawBody.trim()){return;}
   const fmt=document.querySelector('input[name="tx_fmt"]:checked')?.value||'auto';
-  const cleaned=preprocessTranscript(rawBody,fmt,meta.trainer);
-  editDraft=parseTranscript(cleaned,meta);
-  openEditorSections=new Set(editDraft.sections.map((_,i)=>i));
-  mode='edit';
-  fgRender();
+
+  // Show loading state
+  const saveBar=document.querySelector('.save-bar');
+  if(saveBar)saveBar.innerHTML='<div style="padding:12px 0;color:var(--text-muted);font-size:14px">⏳ Parsing transcript with AI… this takes 10–20 seconds</div>';
+
+  if(AZURE_API_URL){
+    const trainerNote=meta.trainer?`The trainer's name is "${meta.trainer}" — focus on their speech and teaching content, not client questions or small talk.`:'Extract all teaching content.';
+    const prompt=`You are building a training field guide for a healthcare software trainer at a plastic surgery consulting firm.
+
+Guide info:
+- Platform: ${meta.platform||'(not specified)'}
+- Title: ${meta.title}
+- Session: ${meta.sessionLabel||'(not specified)'}
+- Duration: ${meta.duration||'(not specified)'}
+- Audience: ${meta.audience||'(not specified)'}
+- ${trainerNote}
+
+Transcript:
+${rawBody.slice(0,8000)}
+
+Parse this into a structured field guide with logical sections. Each section should represent a distinct topic or workflow step covered in the session.
+
+Return ONLY valid JSON in this exact shape (no markdown, no extra text):
+{
+  "sections": [
+    {
+      "num": "01",
+      "title": "Section Title",
+      "timing": "5 min",
+      "theme": "default",
+      "blocks": [
+        {"type": "why", "content": "One sentence explaining why this topic matters to the learner."},
+        {"type": "understand", "content": ["Key concept 1", "Key concept 2", "Key concept 3"]},
+        {"type": "demo", "content": ["Step 1", "Step 2"], "note": "What to show on screen"},
+        {"type": "watch", "content": ["Common mistake or thing to warn about"]},
+        {"type": "text", "content": "A plain explanatory paragraph."},
+        {"type": "callout", "content": "A tip or reminder."}
+      ]
+    }
+  ]
+}
+
+Block types to use:
+- "why": one sentence on why this matters (use once per section, near the top)
+- "understand": bullet list of key concepts or facts learners need to know
+- "demo": steps to show on screen (include "note" field if there's a specific thing to demonstrate)
+- "watch": common mistakes, gotchas, warnings — things the trainer explicitly warns about
+- "text": narrative explanation, context, or background
+- "callout": a tip, shortcut, or important reminder
+- "checklist": pre-session or setup checklist items
+
+Rules:
+- Create one section per major topic shift (aim for 3–8 sections total)
+- Each section needs at least 2 blocks
+- Keep "understand" bullets concise (one line each)
+- Preserve the trainer's actual explanations and specific advice
+- Skip client questions, "got it", small talk, and filler
+- If timing isn't stated, estimate based on content depth`;
+
+    fetch(AZURE_API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'parseTranscript',prompt})
+    })
+    .then(r=>r.json())
+    .then(data=>{
+      const raw=data.content&&data.content[0]?data.content[0].text:'';
+      let parsed;
+      try{parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());}
+      catch(e){parsed=null;}
+
+      if(parsed&&parsed.sections&&parsed.sections.length){
+        editDraft={
+          id:'__new__',
+          platform:meta.platform,
+          title:meta.title,
+          sessionLabel:meta.sessionLabel,
+          duration:meta.duration,
+          audience:meta.audience,
+          meta:'',intentNote:'',
+          footer:'ACG Practice Partners · Confidential · Internal trainer use only',
+          sections:parsed.sections.map(s=>({
+            id:uid(),
+            num:s.num||'',
+            title:s.title||'Section',
+            timing:s.timing||'',
+            theme:s.theme||'default',
+            blocks:(s.blocks||[]).map(b=>({id:uid(),type:b.type||'text',content:b.content||'',note:b.note||undefined}))
+          })),
+          createdAt:Date.now(),updatedAt:Date.now()
+        };
+      } else {
+        // AI returned bad JSON — fall back to regex parser
+        const cleaned=preprocessTranscript(rawBody,fmt,meta.trainer);
+        editDraft=parseTranscript(cleaned,meta);
+      }
+      openEditorSections=new Set(editDraft.sections.map((_,i)=>i));
+      mode='edit';
+      fgRender();
+    })
+    .catch(()=>{
+      // Network error — fall back to regex parser
+      const cleaned=preprocessTranscript(rawBody,fmt,meta.trainer);
+      editDraft=parseTranscript(cleaned,meta);
+      openEditorSections=new Set(editDraft.sections.map((_,i)=>i));
+      mode='edit';
+      fgRender();
+    });
+  } else {
+    // No Azure URL — use regex parser
+    const cleaned=preprocessTranscript(rawBody,fmt,meta.trainer);
+    editDraft=parseTranscript(cleaned,meta);
+    openEditorSections=new Set(editDraft.sections.map((_,i)=>i));
+    mode='edit';
+    fgRender();
+  }
 }
 
 // Strip transcript formatting and filter to trainer speech
