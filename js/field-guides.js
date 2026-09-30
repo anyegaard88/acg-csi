@@ -675,13 +675,13 @@ function runParseTranscript(){
     trainer:(document.getElementById('tx_trainer')?.value||'').trim(),
   };
   const rawBody=document.getElementById('tx_body')?.value||'';
-  if(!rawBody.trim()){alert('Please paste a transcript first.');return;}
+  if(!rawBody.trim()){return;}
   const fmt=document.querySelector('input[name="tx_fmt"]:checked')?.value||'auto';
   const cleaned=preprocessTranscript(rawBody,fmt,meta.trainer);
   editDraft=parseTranscript(cleaned,meta);
   openEditorSections=new Set(editDraft.sections.map((_,i)=>i));
   mode='edit';
-
+  fgRender();
 }
 
 // Strip transcript formatting and filter to trainer speech
