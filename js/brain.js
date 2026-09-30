@@ -1,3 +1,7 @@
+// ── BRAIN GLOBALS ─────────────────────────────────────────────
+var brainFilter="all";
+var brainQ="";
+
 // ── BRAIN LIST VIEW ──────────────────────────────────────────
 function rBrain(body){
   var statusColors={answered:"#059669",research:"#D97706",resolved:"#6B7280"};
@@ -155,6 +159,45 @@ function openPromoteModal(id){
       save(SK+"_issues",knownIssues);
       updateBrainEntry(id,{promoted:"Known Issue: "+plat});
     }
+    closeEdit();
+    render();
+  });
+}
+
+// ── CAPTURE MODAL ────────────────────────────────────────────
+function openCaptureModal(){
+  var platforms=["4D","Nextech w/ P+","Nextech Cloud","Symplast","Podium","ModMed","AestheticsPro","Weave","General"];
+  var ov=document.getElementById("eov");
+  var mo=document.getElementById("emo");
+  document.getElementById("emtag").textContent="CAPTURE";
+  document.getElementById("emttl").textContent="New Capture";
+  var bd=document.getElementById("embd");
+  bd.innerHTML='<div style="display:flex;flex-direction:column;gap:14px;padding:4px 0">'
+    +'<div><label style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;display:block;margin-bottom:5px">NOTE / QUESTION</label>'
+    +'<textarea id="cap-text" rows="4" style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid var(--tan2);font-size:13px;font-family:Inter,sans-serif;outline:none;resize:vertical;box-sizing:border-box" placeholder="What happened, what was asked, what you noticed..."></textarea></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+    +'<div><label style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;display:block;margin-bottom:5px">PLATFORM TAG</label>'
+    +'<select id="cap-tag" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--tan2);font-size:13px;font-family:Inter,sans-serif;outline:none;background:var(--white)"><option value="">None</option>'
+    +platforms.map(function(p){return'<option value="'+p+'">'+p+'</option>';}).join("")
+    +'</select></div>'
+    +'<div><label style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;display:block;margin-bottom:5px">STATUS</label>'
+    +'<select id="cap-status" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--tan2);font-size:13px;font-family:Inter,sans-serif;outline:none;background:var(--white)">'
+    +'<option value="research">Need to Research</option><option value="answered">Answered</option><option value="resolved">Resolved</option>'
+    +'</select></div></div>'
+    +'<div><label style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;display:block;margin-bottom:5px">SOURCE (optional)</label>'
+    +'<input id="cap-from" type="text" placeholder="e.g. client name, call, meeting..." style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--tan2);font-size:13px;font-family:Inter,sans-serif;outline:none;box-sizing:border-box"></div>'
+    +'<button id="cap-save" style="width:100%;padding:12px;border-radius:8px;border:none;background:var(--gold);color:var(--navy);font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">Save Capture</button>'
+    +'</div>';
+  ov.style.display="block";
+  mo.style.display="flex";
+  document.getElementById("cap-text").focus();
+  document.getElementById("cap-save").addEventListener("click",function(){
+    var txt=document.getElementById("cap-text").value.trim();
+    if(!txt)return;
+    var entry={id:uid(),ts:Date.now(),by:currentUser||"ACG",from:document.getElementById("cap-from").value.trim(),text:txt,tag:document.getElementById("cap-tag").value,status:document.getElementById("cap-status").value,image:"",promoted:"",faq:false,faqTitle:""};
+    brainEntries.unshift(entry);
+    save(SK+"_brain",brainEntries);
+    pushBrain(entry);
     closeEdit();
     render();
   });
