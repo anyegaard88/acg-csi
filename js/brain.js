@@ -72,7 +72,7 @@ function rBrain(body){
   body.querySelector("#brain-search").addEventListener("input",function(){brainQ=this.value;render();});
   body.querySelectorAll(".brain-filter").forEach(function(b){b.addEventListener("click",function(){brainFilter=b.getAttribute("data-f");render();});});
   body.querySelectorAll(".brain-del").forEach(function(b){
-    b.addEventListener("click",function(){if(confirm("Delete this capture?")){deleteBrainEntry(b.getAttribute("data-id"));render();}});
+    b.addEventListener("click",function(){deleteBrainEntry(b.getAttribute("data-id"));render();});
   });
   body.querySelectorAll(".brain-status").forEach(function(b){
     b.addEventListener("click",function(){updateBrainEntry(b.getAttribute("data-id"),{status:b.getAttribute("data-status")});render();});
