@@ -1188,3 +1188,4 @@ function applyMerge(){
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
+function rFieldGuides(body){ body.innerHTML='<div id="fg-app"></div>'; fgRender(); }
