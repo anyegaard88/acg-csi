@@ -430,11 +430,10 @@ function cancelEdit(){
 }
 
 function deleteGuide(id){
-  if(!confirm('Delete this guide? This cannot be undone.'))return;
   guides=guides.filter(g=>g.id!==id);
   saveGuides(guides);
   if(activeId===id){activeId=null;mode='library';}
-
+  fgRender();
 }
 
 function collectEditorState(){
@@ -481,7 +480,7 @@ function saveGuide(){
   saveGuides(guides);
   editDraft=null;
   mode='view';
-
+  fgRender();
 }
 
 function toggleEdSec(header){
@@ -519,15 +518,14 @@ function moveSec(si,dir){
   [secs[si],secs[ni]]=[secs[ni],secs[si]];
   if(openEditorSections.has(si)){openEditorSections.delete(si);openEditorSections.add(ni);}
   else if(openEditorSections.has(ni)){openEditorSections.delete(ni);openEditorSections.add(si);}
-
+  fgRender();
 }
 
 function deleteSection(si){
   collectEditorState();
-  if(!confirm('Remove this section?'))return;
   editDraft.sections.splice(si,1);
   openEditorSections.delete(si);
-
+  fgRender();
 }
 
 function addSection(){
@@ -535,7 +533,7 @@ function addSection(){
   const si=editDraft.sections.length;
   editDraft.sections.push({id:uid(),num:'',title:'New Section',timing:'',theme:'default',blocks:[{id:uid(),type:'why',content:''}]});
   openEditorSections.add(si);
-
+  fgRender();
   setTimeout(()=>document.getElementById(`eds_${si}`)?.scrollIntoView({behavior:'smooth',block:'start'}),50);
 }
 
@@ -543,7 +541,7 @@ function addBlock(si){
   collectEditorState();
   editDraft.sections[si].blocks.push({id:uid(),type:'understand',content:[]});
   openEditorSections.add(si);
-
+  fgRender();
   setTimeout(()=>{
     const blocks=document.querySelectorAll(`#blocks_${si} .block-editor`);
     blocks[blocks.length-1]?.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -554,7 +552,7 @@ function deleteBlock(si,bi){
   collectEditorState();
   editDraft.sections[si].blocks.splice(bi,1);
   openEditorSections.add(si);
-
+  fgRender();
 }
 
 function moveBlock(si,bi,dir){
@@ -564,7 +562,7 @@ function moveBlock(si,bi,dir){
   if(ni<0||ni>=blocks.length)return;
   [blocks[bi],blocks[ni]]=[blocks[ni],blocks[bi]];
   openEditorSections.add(si);
-
+  fgRender();
 }
 
 function changeBlockType(si,bi,newType){
@@ -576,7 +574,7 @@ function changeBlockType(si,bi,newType){
   if(!wasListType&&isListType&&typeof b.content==='string')b.content=b.content?b.content.split('\n').filter(l=>l.trim()):[];
   b.type=newType;
   openEditorSections.add(si);
-
+  fgRender();
 }
 
 // ─── TRANSCRIPT IMPORT ────────────────────────────────────────────────────────
@@ -960,7 +958,7 @@ function cancelMerge(){
   const id=mergeState?.targetId;
   mergeState=null;
   if(id){activeId=id;mode='view';}else mode='library';
-
+  fgRender();
 }
 
 function renderMergeTranscript(){
@@ -1019,7 +1017,7 @@ function renderMergeTranscript(){
 
 function runMergeParse(){
   const rawBody=document.getElementById('mx_body')?.value||'';
-  if(!rawBody.trim()){alert('Please paste a transcript first.');return;}
+  if(!rawBody.trim()){return;}
   const trainer=document.getElementById('mx_trainer')?.value||'';
   const fmt=document.querySelector('input[name="mx_fmt"]:checked')?.value||'auto';
   const cleaned=preprocessTranscript(rawBody,fmt,trainer);
@@ -1184,7 +1182,7 @@ function applyMerge(){
   openEditorSections=new Set(editDraft.sections.map((_,i)=>i));
   mergeState=null;
   mode='edit';
-
+  fgRender();
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
