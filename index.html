@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Client Software Intelligence — ACG Practice Partners</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+</head>
+</head>
+<body>
+
+<!-- MOBILE OVERLAY -->
+<div id="mob-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;opacity:0;pointer-events:none;transition:opacity .25s"></div>
+
+<!-- MOBILE HAMBURGER -->
+<button id="mob-menu-btn" style="display:none;position:fixed;top:12px;left:12px;z-index:201;width:38px;height:38px;border-radius:8px;border:none;background:rgba(13,27,38,.92);backdrop-filter:blur(8px);color:#fff;cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:4px;padding:0;box-shadow:0 2px 12px rgba(0,0,0,.3)">
+  <span style="display:block;width:16px;height:2px;background:#fff;border-radius:2px;transition:all .2s"></span>
+  <span style="display:block;width:16px;height:2px;background:#fff;border-radius:2px;transition:all .2s"></span>
+  <span style="display:block;width:16px;height:2px;background:#fff;border-radius:2px;transition:all .2s"></span>
+</button>
+
+<!-- LOGIN GATE -->
+<div id="login-gate" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#1C2B3A 0%,#243548 100%);z-index:1000;align-items:center;justify-content:center;flex-direction:column;padding:20px">
+  <div style="max-width:380px;width:100%;text-align:center">
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:36px">
+      <div style="font-family:'Playfair Display',serif;color:#C9A84C;font-size:32px;font-weight:700;letter-spacing:3px;margin-bottom:6px">ACG</div>
+      <div style="width:50px;height:1px;background:#C9A84C;opacity:.5;margin-bottom:6px"></div>
+      <div style="color:rgba(255,255,255,.4);font-size:10px;font-weight:600;letter-spacing:3px">PRACTICE PARTNERS</div>
+    </div>
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:#fff;margin-bottom:8px">Client Software Intelligence</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.45);margin-bottom:32px;line-height:1.6">Please enter your name to continue. This identifies your edits and captures.</div>
+    <input id="login-name-inp" type="text" placeholder="Your name" style="width:100%;padding:13px 16px;border-radius:9px;border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#fff;font-size:15px;font-family:Inter,sans-serif;outline:none;text-align:center;margin-bottom:14px;box-sizing:border-box">
+    <button id="login-continue-btn" style="width:100%;padding:13px;border-radius:9px;border:none;background:#C9A84C;color:#1C2B3A;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;letter-spacing:.3px">Continue &#x2192;</button>
+    <div id="login-error" style="color:#FCA5A5;font-size:12px;margin-top:10px;display:none">Please enter your name</div>
+  </div>
+</div>
+
+<!-- Hidden legacy elements for JS compatibility -->
+<div id="hdr" style="display:none"></div>
+<div id="ctx-bar" style="display:none"><span id="ctx-display"></span><span id="ctx-notes-preview"></span><button id="scratch-btn"></button><button id="ctx-edit-btn"></button></div>
+<div id="nav" style="display:none">
+  <button class="nt on" id="nt-ask"></button><button class="nt" id="nt-platform"></button>
+  <button class="nt" id="nt-compare"></button><button class="nt" id="nt-issues"></button>
+  <button class="nt" id="nt-postcall"></button><button class="nt" id="nt-help"></button>
+  <button class="nt" id="nt-brain"></button><button class="nt" id="nt-profiles"></button>
+  <button class="nt" id="nt-releases"></button><button class="nt" id="nt-audit"></button>
+  <button class="nt" id="nt-browse"></button><button class="nt" id="nt-fav"></button>
+  <button class="nt" id="nt-settings"></button>
+  <button class="nt" id="nt-training"></button>
+  <button class="ns" id="ns-call"></button><button class="ns" id="ns-knowledge"></button><button class="ns" id="ns-work"></button>
+</div>
+<div id="subb" style="display:none"></div><div id="subd" style="display:none"></div>
+<div id="subc" style="display:none"></div><div id="subch" style="display:none"></div>
+<div id="subf" style="display:none"></div><div id="subs" style="display:none"></div>
+<div id="subi" style="display:none"></div><div id="suba" style="display:none"></div>
+<div id="subbr" style="display:none"></div><div id="subco" style="display:none"></div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div id="sb-brand" onclick="navSection='home';SV('home');" title="Home">
+    <span id="sb-acg">ACG</span>
+    <span id="sb-pp">Practice Partners</span>
+    <span id="sb-title">Client Software Intelligence</span>
+  </div>
+  <nav id="sb-nav">
+    <!-- CALL -->
+    <button class="sb-main-item" id="sbi-call" onclick="SV('ask')">
+      <span class="sb-main-icon" style="background:rgba(201,168,76,.18);border-color:rgba(201,168,76,.3)"><span style="filter:sepia(1) saturate(4) hue-rotate(5deg) brightness(1.2)">📞</span></span>
+      <span class="sb-main-label">Call</span>
+      <span class="sb-badge" id="pc-badge" style="display:none;margin-left:auto">0</span>
+    </button>
+    <!-- KNOWLEDGE -->
+    <button class="sb-main-item" id="sbi-knowledge" onclick="SV('knowledge')">
+      <span class="sb-main-icon" style="background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.25);color:#FDE68A;font-size:16px;font-weight:900">✦</span>
+      <span class="sb-main-label">Knowledge</span>
+    </button>
+    <!-- WORK/CLIENTS -->
+    <button class="sb-main-item" id="sbi-profiles" onclick="SV('profiles')">
+      <span class="sb-main-icon" style="background:rgba(52,211,153,.18);border-color:rgba(52,211,153,.3);box-shadow:0 0 12px rgba(52,211,153,.12)">🥷</span>
+      <span class="sb-main-label">Work</span>
+    </button>
+    <button class="sb-main-item" id="sbi-fieldguides" onclick="SV('fieldguides')">
+      <span class="sb-main-icon" style="background:rgba(100,149,237,.18);border-color:rgba(100,149,237,.3);font-size:16px">📋</span>
+      <span class="sb-main-label">Field Guides</span>
+    </button>
+  </nav>
+  <!-- Hidden nav items for JS compat -->
+  <div style="display:none">
+    <button id="sbi-ask"></button><button id="sbi-platform"></button><button id="sbi-compare"></button>
+    <button id="sbi-issues"></button><button id="sbi-postcall"></button><button id="sbi-help"></button>
+    <button id="sbi-brain"></button><button id="sbi-releases"></button><button id="sbi-training"></button><button id="sbi-audit"></button><button id="sbi-fieldguides" style="display:none"></button>
+    <button id="sbi-browse"></button><button id="sbi-fav"></button><button id="sbi-settings"></button>
+    <div id="sbs-call"></div><div id="sbs-knowledge"></div><div id="sbs-work"></div>
+  </div>
+  <div id="sb-bottom">
+    <div id="sb-ctx" onclick="openCtx()">
+      <div id="sb-ctx-label">CALL CONTEXT</div>
+      <div id="sb-ctx-value" class="empty">Tap to set practice</div>
+    </div>
+    <button class="sb-main-item" id="sbi-audit" onclick="SV('audit')" style="border-left:3px solid transparent;padding:8px 16px;display:flex;align-items:center;gap:10px;width:100%;border-top:1px solid rgba(255,255,255,.05)">
+      <span style="width:28px;height:28px;background:rgba(201,168,76,.1);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;border:1px solid rgba(201,168,76,.2);flex-shrink:0">🔍</span>
+      <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.55)">Technology Audit</span>
+    </button>
+    <button id="sb-settings-btn" onclick="SV('settings')">⚙ Settings</button>
+    <div id="sb-user">
+      <span id="sb-username">ACG</span>
+      <span id="sync-ind"></span>
+    </div>
+    <div style="font-size:9px;color:rgba(255,255,255,.2);margin-top:6px;letter-spacing:.3px">&#169; 2026 ACG Practice Partners</div>
+  </div>
+</div>
+
+<!-- MAIN AREA -->
+<div id="main">
+  <div id="topbar">
+    <div id="call-subnav">
+      <button class="csn-btn" id="csn-ask" onclick="SV('ask')">⌖ Ask</button>
+      <button class="csn-btn" id="csn-platform" onclick="SV('platform')">▣ Platform</button>
+      <button class="csn-btn" id="csn-compare" onclick="SV('compare')">⇆ Compare</button>
+      <button class="csn-btn" id="csn-issues" onclick="SV('issues')">⚠ Issues</button>
+      <button class="csn-btn" id="csn-postcall" onclick="SV('postcall')">✓ Post-Call</button>
+    </div>
+    <div id="ask-ui">
+      <div id="ask-wrap">
+        <input id="ask-inp" type="text" placeholder="Ask anything — e.g. does 4D have injectable tracking?" autocomplete="off">
+        <button id="ask-btn">Ask</button>
+      </div>
+      <div id="ask-hints"></div>
+    </div>
+    <div id="pick-ui">
+      <div style="color:rgba(255,255,255,.3);font-size:10px;font-weight:700;letter-spacing:.8px;margin-bottom:7px">SELECT A PLATFORM</div>
+      <div id="plat-grid"></div>
+    </div>
+  </div>
+  <div id="body"></div>
+</div>
+
+
+
+<!-- EDIT MODAL -->
+<div id="eov"></div>
+<div id="emo">
+  <div id="emhd">
+    <div id="emtag"></div>
+    <div id="emttl"></div>
+    <button id="emcl">&#xd7;</button>
+  </div>
+  <div id="embd"></div>
+</div>
+
+<!-- PRACTICE CONTEXT MODAL -->
+<div id="pov"></div>
+<div id="pmo">
+  <div id="pmhd" style="position:relative">
+    <div id="pmtl">Set Practice Context</div>
+    <button id="pmcl">&#xd7;</button>
+  </div>
+  <div id="pmbd"></div>
+</div>
+
+<!-- QUICK CAPTURE FLOATING BUTTON -->
+
+
+<!-- QUICK ANSWERS FULL SCREEN VIEW -->
+<div id="scratch-pad" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:400;background:#1C2B3A;border-top:2px solid #C9A84C;flex-direction:column">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid rgba(255,255,255,.1)">
+    <div style="color:#C9A84C;font-size:10px;font-weight:700;letter-spacing:1px">CALL NOTES <span id="scratch-practice" style="color:rgba(255,255,255,.4);font-weight:400;margin-left:6px"></span></div>
+    <div style="display:flex;gap:8px">
+      <button id="scratch-save-btn" style="background:none;border:1px solid rgba(201,168,76,.4);border-radius:5px;color:#C9A84C;cursor:pointer;font-size:11px;padding:2px 10px;font-family:Inter,sans-serif">Save</button>
+      <button id="scratch-close-btn" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:18px;line-height:1">&#xd7;</button>
+    </div>
+  </div>
+  <textarea id="scratch-text" style="flex:1;background:transparent;border:none;color:#E8F0F8;font-family:Inter,sans-serif;font-size:13px;line-height:1.6;padding:12px 16px;resize:none;outline:none;min-height:120px;max-height:200px" placeholder="Jot anything during the call &#x2014; saves per practice automatically..."></textarea>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/core.js"></script>
+<script src="js/platform.js"></script>
+<script src="js/audit.js"></script>
+<script src="js/software-review.js"></script>
+<script src="js/brain.js"></script>
+<script src="js/help.js"></script>
+<script src="js/profiles.js"></script>
+<script src="js/releases.js"></script>
+<script src="js/home.js"></script>
+<script src="js/field-guides.js"></script>
+</body>
+</html>
